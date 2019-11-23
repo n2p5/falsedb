@@ -25,7 +25,17 @@ func main() {
 		port = p
 	}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) { io.WriteString(w, "") })
+	handlerFunc := func(w http.ResponseWriter, req *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "*")
+		w.Header().Set("Access-Control-Expose-Headers", "*")
+		w.Header().Set("Access-Control-Max-Age", "86400")
+		w.Header().Set("Cache-control", "public, max-age=31536000, immutable")
+		io.WriteString(w, "")
+	}
+
+	http.HandleFunc("/", handlerFunc)
 	fmt.Printf("falsedb server is running on port: %v\nyou can run this on an alternate port with the -p or --port flags\n", port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf("0.0.0.0:%v", port), nil))
 }
