@@ -18,7 +18,7 @@ func main() {
 			os.Exit(1)
 		}
 		p, err := strconv.Atoi(args[1])
-		if err != nil || 1 > port || port > 65535 {
+		if err != nil || 1 >= port || port >= 65535 {
 			fmt.Println("port must be a valid integer between 1-65535")
 			os.Exit(1)
 		}
