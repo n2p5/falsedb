@@ -1,0 +1,360 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>falsedb: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/rjrbt/falsedb/falsedb.go (90.5%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package falsedb
+
+import (
+        "context"
+        "database/sql"
+        "database/sql/driver"
+        "io"
+        "time"
+)
+
+// DriverName is the name of the driver used by sql
+const DriverName = "falsedb"
+
+func init() <span class="cov8" title="1">{
+        sql.Register(DriverName, &amp;Driver{})
+}</span>
+
+// Driver implements database/sql/driver.Driver and driver.DriverContext
+type Driver struct{}
+
+func (d *Driver) Open(name string) (driver.Conn, error) <span class="cov8" title="1">{
+        return &amp;conn{}, nil
+}</span>
+
+func (d *Driver) OpenConnector(name string) (driver.Connector, error) <span class="cov8" title="1">{
+        return &amp;connector{driver: d}, nil
+}</span>
+
+type connector struct {
+        driver *Driver
+}
+
+func (c *connector) Connect(context.Context) (driver.Conn, error) <span class="cov8" title="1">{
+        return c.driver.Open("")
+}</span>
+
+func (c *connector) Driver() driver.Driver <span class="cov8" title="1">{
+        return c.driver
+}</span>
+
+// conn implements database/sql/driver.Conn, driver.ConnBeginTx, driver.QueryerContext,
+// driver.ExecerContext, and driver.ConnPrepareContext
+type conn struct{}
+
+func (c *conn) Begin() (driver.Tx, error) <span class="cov0" title="0">{
+        return &amp;tx{}, nil
+}</span>
+
+func (c *conn) Close() error <span class="cov8" title="1">{
+        return nil
+}</span>
+
+func (c *conn) Prepare(query string) (driver.Stmt, error) <span class="cov8" title="1">{
+        return &amp;stmt{numInput: -1}, nil
+}</span>
+
+// Direct driver methods ignore context
+func (c *conn) BeginTx(ctx context.Context, opts driver.TxOptions) (driver.Tx, error) <span class="cov8" title="1">{
+        select </span>{
+        case &lt;-ctx.Done():<span class="cov8" title="1">
+                return nil, ctx.Err()</span>
+        default:<span class="cov8" title="1">
+                return &amp;tx{}, nil</span>
+        }
+}
+
+func (c *conn) PrepareContext(ctx context.Context, query string) (driver.Stmt, error) <span class="cov8" title="1">{
+        select </span>{
+        case &lt;-ctx.Done():<span class="cov8" title="1">
+                return nil, ctx.Err()</span>
+        default:<span class="cov8" title="1">
+                return &amp;stmt{numInput: -1}, nil</span>
+        }
+}
+
+func (c *conn) QueryContext(ctx context.Context, query string, args []driver.NamedValue) (driver.Rows, error) <span class="cov8" title="1">{
+        select </span>{
+        case &lt;-ctx.Done():<span class="cov8" title="1">
+                return nil, ctx.Err()</span>
+        default:<span class="cov8" title="1">
+                return &amp;rows{}, nil</span>
+        }
+}
+
+func (c *conn) ExecContext(ctx context.Context, query string, args []driver.NamedValue) (driver.Result, error) <span class="cov8" title="1">{
+        select </span>{
+        case &lt;-ctx.Done():<span class="cov8" title="1">
+                return nil, ctx.Err()</span>
+        default:<span class="cov8" title="1">
+                return &amp;result{}, nil</span>
+        }
+}
+
+// Legacy methods for driver.Queryer and driver.Execer
+func (c *conn) Query(query string, args []driver.Value) (driver.Rows, error) <span class="cov0" title="0">{
+        return &amp;rows{}, nil
+}</span>
+
+func (c *conn) Exec(query string, args []driver.Value) (driver.Result, error) <span class="cov0" title="0">{
+        return &amp;result{}, nil
+}</span>
+
+type stmt struct {
+        numInput int
+}
+
+func (s *stmt) Close() error <span class="cov8" title="1">{
+        return nil
+}</span>
+
+func (s *stmt) NumInput() int <span class="cov8" title="1">{
+        return s.numInput
+}</span>
+
+func (s *stmt) Exec(args []driver.Value) (driver.Result, error) <span class="cov0" title="0">{
+        return &amp;result{}, nil
+}</span>
+
+func (s *stmt) Query(args []driver.Value) (driver.Rows, error) <span class="cov0" title="0">{
+        return &amp;rows{}, nil
+}</span>
+
+// StmtExecContext and StmtQueryContext implementations
+func (s *stmt) ExecContext(ctx context.Context, args []driver.NamedValue) (driver.Result, error) <span class="cov8" title="1">{
+        select </span>{
+        case &lt;-ctx.Done():<span class="cov8" title="1">
+                return nil, ctx.Err()</span>
+        default:<span class="cov8" title="1">
+                return &amp;result{}, nil</span>
+        }
+}
+
+func (s *stmt) QueryContext(ctx context.Context, args []driver.NamedValue) (driver.Rows, error) <span class="cov8" title="1">{
+        select </span>{
+        case &lt;-ctx.Done():<span class="cov0" title="0">
+                return nil, ctx.Err()</span>
+        default:<span class="cov8" title="1">
+                return &amp;rows{}, nil</span>
+        }
+}
+
+type result struct{}
+
+func (r *result) LastInsertId() (int64, error) <span class="cov8" title="1">{
+        return 0, nil
+}</span>
+
+func (r *result) RowsAffected() (int64, error) <span class="cov8" title="1">{
+        return 0, nil
+}</span>
+
+type rows struct {
+        closed bool
+}
+
+func (r *rows) Columns() []string <span class="cov8" title="1">{
+        return []string{}
+}</span>
+
+func (r *rows) Close() error <span class="cov8" title="1">{
+        r.closed = true
+        return nil
+}</span>
+
+func (r *rows) Next(dest []driver.Value) error <span class="cov8" title="1">{
+        return io.EOF
+}</span>
+
+// Optional column type interfaces
+func (r *rows) ColumnTypeScanType(index int) any <span class="cov8" title="1">{
+        return nil
+}</span>
+
+func (r *rows) ColumnTypeDatabaseTypeName(index int) string <span class="cov8" title="1">{
+        return "NULL"
+}</span>
+
+func (r *rows) ColumnTypeNullable(index int) (nullable, ok bool) <span class="cov8" title="1">{
+        return true, true
+}</span>
+
+func (r *rows) ColumnTypePrecisionScale(index int) (precision, scale int64, ok bool) <span class="cov8" title="1">{
+        return 0, 0, true
+}</span>
+
+func (r *rows) ColumnTypeLength(index int) (length int64, ok bool) <span class="cov8" title="1">{
+        return 0, true
+}</span>
+
+type tx struct{}
+
+func (t *tx) Commit() error <span class="cov8" title="1">{
+        return nil
+}</span>
+
+func (t *tx) Rollback() error <span class="cov8" title="1">{
+        return nil
+}</span>
+
+// Helper functions for opening connections
+func Open() (*sql.DB, error) <span class="cov8" title="1">{
+        return sql.Open(DriverName, "")
+}</span>
+
+func OpenDB(opts ...Option) *sql.DB <span class="cov8" title="1">{
+        cfg := &amp;config{
+                maxOpenConns:    0,
+                maxIdleConns:    0,
+                connMaxLifetime: 0,
+                connMaxIdleTime: 0,
+        }
+
+        for _, opt := range opts </span><span class="cov8" title="1">{
+                opt(cfg)
+        }</span>
+
+        <span class="cov8" title="1">db, _ := Open()
+        db.SetMaxOpenConns(cfg.maxOpenConns)
+        db.SetMaxIdleConns(cfg.maxIdleConns)
+        db.SetConnMaxLifetime(cfg.connMaxLifetime)
+        db.SetConnMaxIdleTime(cfg.connMaxIdleTime)
+        return db</span>
+}
+
+// Configuration options
+type Option func(*config)
+
+type config struct {
+        maxOpenConns    int
+        maxIdleConns    int
+        connMaxLifetime time.Duration
+        connMaxIdleTime time.Duration
+}
+
+func WithMaxOpenConns(n int) Option <span class="cov8" title="1">{
+        return func(c *config) </span><span class="cov8" title="1">{
+                c.maxOpenConns = n
+        }</span>
+}
+
+func WithMaxIdleConns(n int) Option <span class="cov8" title="1">{
+        return func(c *config) </span><span class="cov8" title="1">{
+                c.maxIdleConns = n
+        }</span>
+}
+
+func WithConnMaxLifetime(d time.Duration) Option <span class="cov8" title="1">{
+        return func(c *config) </span><span class="cov8" title="1">{
+                c.connMaxLifetime = d
+        }</span>
+}
+
+func WithConnMaxIdleTime(d time.Duration) Option <span class="cov8" title="1">{
+        return func(c *config) </span><span class="cov8" title="1">{
+                c.connMaxIdleTime = d
+        }</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
