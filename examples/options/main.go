@@ -8,7 +8,6 @@ import (
 )
 
 func main() {
-	// Create a database with custom connection options
 	db := falsedb.OpenDB(
 		falsedb.WithMaxOpenConns(10),
 		falsedb.WithMaxIdleConns(5),
@@ -17,5 +16,5 @@ func main() {
 	)
 	defer db.Close()
 
-	fmt.Println("Database configured with custom connection options!")
+	fmt.Println("Database configured with custom connection options, but they are meaningless!")
 }

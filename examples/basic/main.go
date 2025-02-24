@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 
@@ -17,7 +16,6 @@ func main() {
 	}
 	defer db.Close()
 
-	// Execute a query
 	ctx := context.Background()
 	rows, err := db.QueryContext(ctx, "SELECT * FROM users")
 	if err != nil {
@@ -25,9 +23,7 @@ func main() {
 	}
 	defer rows.Close()
 
-	// Iterate over results
 	for rows.Next() {
-		// Process row...
 		fmt.Println("Found a row!")
 	}
 
