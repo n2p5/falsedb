@@ -1,3 +1,3 @@
 module github.com/rjrbt/falsedb
 
-go 1.24
+go 1.25.1
